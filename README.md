@@ -11,7 +11,7 @@ With [Material Design Bottom Navigation pattern](https://www.google.com/design/s
 ## Gradle
 
 ```groovy
-compile 'com.ncapdevi:frag-nav:2.2.3'
+implementation 'com.ncapdevi:frag-nav:2.4.0'   //or or `compile` if on older gradle version
 ```
 
 ## How do I implement it?
@@ -161,16 +161,16 @@ Use FragNavController.setTransitionMode();
 
 ### Helper functions
 ```java
-
-   /**
+    /**
      * Get the number of fragment stacks
      *
      * @return the number of fragment stacks
      */
     @CheckResult
-    public int getSize()
-    
-    
+    public int getSize() {
+        return mFragmentStacks.size();
+    }
+
     /**
      * Get a copy of the stack at a given index
      *
@@ -179,44 +179,79 @@ Use FragNavController.setTransitionMode();
     @SuppressWarnings("unchecked")
     @CheckResult
     @Nullable
-    public Stack<Fragment> getStack(@TabIndex int index)
-    
-        /**
-         * Get a copy of the current stack that is being displayed
-         *
-         * @return Current stack
-         */
-        @SuppressWarnings("unchecked")
-        @CheckResult
-        @Nullable
-        public Stack<Fragment> getCurrentStack()
-        
-            /**
-             * Get the index of the current stack that is being displayed
-             *
-             * @return Current stack index
-             */
-            @CheckResult
-            @TabIndex
-            public int getCurrentStackIndex()
-            
-            
+    public Stack<Fragment> getStack(@TabIndex int index) {
+        if (index == NO_TAB) {
+            return null;
+        }
+        if (index >= mFragmentStacks.size()) {
+            throw new IndexOutOfBoundsException("Can't get an index that's larger than we've setup");
+        }
+        return (Stack<Fragment>) mFragmentStacks.get(index).clone();
+    }
+
+    /**
+     * Get a copy of the current stack that is being displayed
+     *
+     * @return Current stack
+     */
+    @SuppressWarnings("unchecked")
+    @CheckResult
+    @Nullable
+    public Stack<Fragment> getCurrentStack() {
+        return getStack(mSelectedTabIndex);
+    }
+
+    /**
+     * Get the index of the current stack that is being displayed
+     *
+     * @return Current stack index
+     */
+    @CheckResult
+    @TabIndex
+    public int getCurrentStackIndex() {
+        return mSelectedTabIndex;
+    }
+
     /**
      * @return If true, you are at the bottom of the stack
      * (Consider using replaceFragment if you need to change the root fragment for some reason)
      * else you can popFragment as needed as your are not at the root
      */
     @CheckResult
-    public boolean isRootFragment()
-    
-        /**
-         * @return Current DialogFragment being displayed. Null if none
-         */
-        @Nullable
-        @CheckResult
-        public DialogFragment getCurrentDialogFrag()
+    public boolean isRootFragment() {
+        Stack<Fragment> stack = getCurrentStack();
+
+        return stack == null || stack.size() == 1;
+    }
+
+    /**
+     * Helper function to get wether the fragmentManger has gone through a stateSave, if this is true, you probably want to commit  allowing stateloss
+     *
+     * @return if fragmentManger isStateSaved
+     */
+    public boolean isStateSaved() {
+        return mFragmentManager.isStateSaved();
+    }
+
+    /**
+     *  Use this if you need to make sure that pending transactions occur immediately. This call is safe to
+     *  call as often as you want as there's a check to prevent multiple executePendingTransactions at once
+     *
+     */
+    public void executePendingTransactions() {
+        if (!mExecutingTransaction) {
+            mExecutingTransaction = true;
+            mFragmentManager.executePendingTransactions();
+            mExecutingTransaction = false;
+        }
+    }
+
     
 ```
+
+## Restoring Fragment State
+Fragments transitions in this library use attach()/detch() (http://daniel-codes.blogspot.com/2012/06/fragment-transactions-reference.html).  This is a delibrate choice in order to maintain the fragment's lifecycle, as well as being optimal for memory.  This means that fragments will go through their proper lifecycle  https://developer.android.com/guide/components/fragments.html#Lifecycle . This lifecycle includes going through `OnCreateView` which means that if you want to maintain view states, that is outside the scope of this library, and is up to the indiviudal fragment.  There are plenty of resources out there that will help you design your fragments in such a way that their view state can be restored https://inthecheesefactory.com/blog/fragment-state-saving-best-practices/en and there are libraries that can help restore other states https://github.com/frankiesardo/icepick  
+
 ## Apps Using FragNav
 Feel free to send me a pull request with your app and I'll link you here:
 
