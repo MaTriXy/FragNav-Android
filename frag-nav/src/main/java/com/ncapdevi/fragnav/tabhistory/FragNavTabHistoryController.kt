@@ -1,14 +1,14 @@
 package com.ncapdevi.fragnav.tabhistory
 
 import android.os.Bundle
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 import com.ncapdevi.fragnav.FragNavTransactionOptions
 
 interface FragNavTabHistoryController {
     /**
      * Define what happens when we try to pop on a tab where root fragment is at the top
      */
-    @IntDef(CURRENT_TAB.toLong(), UNIQUE_TAB_HISTORY.toLong(), UNLIMITED_TAB_HISTORY.toLong())
+    @IntDef(CURRENT_TAB, UNIQUE_TAB_HISTORY, UNLIMITED_TAB_HISTORY)
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
     annotation class PopStrategy
 

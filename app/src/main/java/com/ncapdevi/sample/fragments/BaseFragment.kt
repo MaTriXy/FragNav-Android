@@ -2,7 +2,7 @@ package com.ncapdevi.sample.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,10 +42,10 @@ open class BaseFragment : Fragment() {
     }
 
     interface FragmentNavigation {
-        fun pushFragment(fragment: Fragment)
+        fun pushFragment(fragment: Fragment, sharedElementList: List<Pair<View, String>>?= null)
     }
 
     companion object {
-        val ARGS_INSTANCE = "com.ncapdevi.sample.argsInstance"
+       const val ARGS_INSTANCE = "com.ncapdevi.sample.argsInstance"
     }
 }

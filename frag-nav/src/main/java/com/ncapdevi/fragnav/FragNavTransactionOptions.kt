@@ -1,12 +1,11 @@
 package com.ncapdevi.fragnav
 
-import android.support.annotation.AnimRes
-import android.support.annotation.StyleRes
-import android.support.v4.app.FragmentTransaction
-import android.support.v4.util.Pair
+import androidx.annotation.AnimRes
+import androidx.annotation.StyleRes
+import androidx.fragment.app.FragmentTransaction
 import android.view.View
 
-
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class FragNavTransactionOptions private constructor(builder: Builder) {
     val sharedElements: List<Pair<View, String>> = builder.sharedElements
     @FragNavController.Transit
@@ -24,7 +23,7 @@ class FragNavTransactionOptions private constructor(builder: Builder) {
     val breadCrumbTitle: String? = builder.breadCrumbTitle
     val breadCrumbShortTitle: String? = builder.breadCrumbShortTitle
     val allowStateLoss: Boolean = builder.allowStateLoss
-
+    val reordering: Boolean = builder.reordering
 
     class Builder {
         var sharedElements: MutableList<Pair<View, String>> = mutableListOf()
@@ -37,6 +36,7 @@ class FragNavTransactionOptions private constructor(builder: Builder) {
         var breadCrumbTitle: String? = null
         var breadCrumbShortTitle: String? = null
         var allowStateLoss = false
+        var reordering = false
 
         fun addSharedElement(element: Pair<View, String>): Builder {
             sharedElements.add(element)
@@ -83,6 +83,11 @@ class FragNavTransactionOptions private constructor(builder: Builder) {
 
         fun allowStateLoss(allow: Boolean): Builder {
             allowStateLoss = allow
+            return this
+        }
+
+        fun allowReordering(reorder: Boolean): Builder {
+            reordering = reorder
             return this
         }
 
